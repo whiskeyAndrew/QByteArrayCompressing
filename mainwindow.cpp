@@ -7,7 +7,7 @@
 #include <QFile>
 #include <QFileDialog>
 
-QString fileNameIn;
+
  //Объявляем имя файла, который мы будем выбирать из button3
 
 MainWindow::MainWindow(QWidget *parent)
@@ -22,55 +22,46 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-class Compressing{
 
-public:
+void MainWindow::Compress (){
+    QFileInfo fileNameInInfo(fileNameIn); //Берем информацию о выбранном файле, чтобы затем поменять его суффикс на нужный нам для выходного файла
+    QString newFileName = fileNameInInfo.path() + "/" + fileNameInInfo.completeBaseName() + ".dat";
 
-    void getFileName(){
+    QFile fileNameToCompress = fileNameIn; //Файл, который мы будем сжимать
+    QFile fileNameOut = newFileName; //Файл, который мы получим на выходе
 
-    }
-    void Compress (){
-        QFileInfo fileNameInInfo(fileNameIn); //Берем информацию о выбранном файле, чтобы затем поменять его суффикс на нужный нам для выходного файла
-        QString newFileName = fileNameInInfo.path() + "/" + fileNameInInfo.completeBaseName() + ".dat";
+    fileNameToCompress.open(QIODevice::ReadOnly); //Открываем файлы
+    fileNameOut.open(QIODevice::WriteOnly);
 
-        QFile fileNameToCompress = fileNameIn; //Файл, который мы будем сжимать
-        QFile fileNameOut = newFileName; //Файл, который мы получим на выходе
+    QByteArray uncompressedData = fileNameToCompress.readAll(); //Читаем данные из файла и заносим их в переменную
+    QByteArray compressedData = qCompress(uncompressedData,9); //Сжимаем в режиме 9, т.к. этот режим имеет самое медленное, но самое сильное сжатие, исходя из документации
+    fileNameOut.write(compressedData); //Записываем сжатые данные в файл
 
-        fileNameToCompress.open(QIODevice::ReadOnly); //Открываем файлы
-        fileNameOut.open(QIODevice::WriteOnly);
+    fileNameToCompress.close(); //Не забываем закрыть
+    fileNameOut.close();
+}
 
-        QByteArray uncompressedData = fileNameToCompress.readAll(); //Читаем данные из файла и заносим их в переменную
-        QByteArray compressedData = qCompress(uncompressedData,9); //Сжимаем в режиме 9, т.к. этот режим имеет самое медленное, но самое сильное сжатие, исходя из документации
-        fileNameOut.write(compressedData); //Записываем сжатые данные в файл
+void MainWindow::Uncompress (){
+    QFileInfo fileNameInInfo(fileNameIn); //Берем информацию о выбранном файле, чтобы затем поменять его суффикс на нужный нам для выходного файла
+    QString newFileName = fileNameInInfo.path() + "/" + fileNameInInfo.completeBaseName() + ".txt"; //Меняем суфикс
 
-        fileNameToCompress.close(); //Не забываем закрыть
-        fileNameOut.close();
-    }
+    QFile fileNameToUncompress = fileNameIn; //Файл, который мы будем разжимать
+    QFile fileNameOut = newFileName; //Файл, который мы получим на выходе
 
-    void Uncompress (){
-        QFileInfo fileNameInInfo(fileNameIn); //Берем информацию о выбранном файле, чтобы затем поменять его суффикс на нужный нам для выходного файла
-        QString newFileName = fileNameInInfo.path() + "/" + fileNameInInfo.completeBaseName() + ".txt"; //Меняем суфикс
+    fileNameToUncompress.open(QIODevice::ReadOnly);
+    fileNameOut.open(QIODevice::WriteOnly);
 
-        QFile fileNameToUncompress = fileNameIn; //Файл, который мы будем разжимать
-        QFile fileNameOut = newFileName; //Файл, который мы получим на выходе
+    QByteArray uncompressedData = fileNameToUncompress.readAll(); //Считываем данные из бинарника
+    QByteArray compressedData = qUncompress(uncompressedData); //Разжимаем их
+    fileNameOut.write(compressedData);//Записываем в файл с суффиксом .txt
 
-        fileNameToUncompress.open(QIODevice::ReadOnly);
-        fileNameOut.open(QIODevice::WriteOnly);
-
-        QByteArray uncompressedData = fileNameToUncompress.readAll(); //Считываем данные из бинарника
-        QByteArray compressedData = qUncompress(uncompressedData); //Разжимаем их
-        fileNameOut.write(compressedData);//Записываем в файл с суффиксом .txt
-
-        fileNameToUncompress.close();
-        fileNameOut.close();
-    }
-};
-
-
+    fileNameToUncompress.close();
+    fileNameOut.close();
+}
 
 
 void MainWindow::on_pushButton_3_clicked()
-{
+{    
     fileNameIn = QFileDialog::getOpenFileName(); //Верхняя кнопка, открывает диалоговое окно для выбора файла
     ui->label->setText(fileNameIn); //Перенесем в лейбл, чтобы пользователь видел какой файл он открыл
 }
@@ -78,14 +69,12 @@ void MainWindow::on_pushButton_3_clicked()
 
 void MainWindow::on_pushButton_clicked()
 {
-    Compressing comp;
-    comp.Compress();
+    Compress();
 }
 
 
 void MainWindow::on_pushButton_2_clicked()
 {
-    Compressing comp;
-    comp.Uncompress();
+    Uncompress();
 }
 
