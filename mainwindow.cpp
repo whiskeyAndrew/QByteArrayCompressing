@@ -27,7 +27,7 @@ void Compress (){
     QString newFileName = fileNameInInfo.path() + "/" + fileNameInInfo.completeBaseName() + ".dat";
 
     QFile fileNameToCompress = fileNameIn; //Файл, который мы будем сжимать
-    QFile fileNameOut = newFileName; //Файл, который мы будем расжимать
+    QFile fileNameOut = newFileName; //Файл, который мы получим на выходе
 
     fileNameToCompress.open(QIODevice::ReadOnly); //Открываем файлы
     fileNameOut.open(QIODevice::WriteOnly);
@@ -44,7 +44,7 @@ void Uncompress (){
     QString newFileName = fileNameInInfo.path() + "/" + fileNameInInfo.completeBaseName() + ".txt"; //Меняем суфикс
 
     QFile fileNameToUncompress = fileNameIn; //Файл, который мы будем разжимать
-    QFile fileNameOut = newFileName;
+    QFile fileNameOut = newFileName; //Файл, который мы получим на выходе
 
     fileNameToUncompress.open(QIODevice::ReadOnly);
     fileNameOut.open(QIODevice::WriteOnly);
